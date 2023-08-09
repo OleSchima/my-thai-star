@@ -92,8 +92,10 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
   @Inject
   private Ordermanagement orderManagement;
 
+  /**
   @Inject
   private Mail mailService;
+  **/
 
   /**
    * The constructor.
@@ -223,7 +225,6 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
       LOG.info("OrderLine with id '{}' has been created.", resultInvitedGuest.getId());
     }
     LOG.debug("Booking with id '{}' has been created.", resultEntity.getId());
-
     sendConfirmationEmails(resultEntity);
 
     return getBeanMapper().map(resultEntity, BookingEto.class);
@@ -437,16 +438,38 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
       invitedMailContent.append("To accept: ").append(linkAccept).append("\n");
       invitedMailContent.append("To decline: ").append(linkDecline).append("\n");
 
-      this.mailService.sendMail(guest.getEmail(), "Event invite", invitedMailContent.toString());
+      //this.mailService.sendMail(guest.getEmail(), "Event invite", invitedMailContent.toString());
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
 
   }
 
+  /**
+   * Target Method for JoularJX
+   * @param booking
+   */
   private void sendConfirmationEmailToHost(BookingEntity booking) {
 
     try {
+
+      // Test der Richtlinie Stringbuilder mit JoularJX
+      String mailContent = "";
+      mailContent = mailContent + "MY THAI STAR" + '\n';
+      mailContent = mailContent + "Hi " + booking.getEmail() + '\n';
+      mailContent = mailContent + "Your booking has been confirmed." + '\n';
+      mailContent = mailContent + "Host: " + booking.getName() + '<' + booking.getEmail() + '>' + '\n';
+      mailContent = mailContent + "Booking CODE: " + booking.getBookingToken() + '\n';
+      mailContent = mailContent + "Booking Date: " + booking.getBookingDate() + '\n';
+      if (!booking.getInvitedGuests().isEmpty()) {
+        mailContent = mailContent + "Guest list: " + '\n';
+        for (InvitedGuestEntity guest : booking.getInvitedGuests()) {
+          mailContent = mailContent + '-' + guest.getEmail() + '\n';
+        }
+      }
+
+      /**
+
       StringBuilder hostMailContent = new StringBuilder();
       hostMailContent.append("MY THAI STAR").append("\n");
       hostMailContent.append("Hi ").append(booking.getEmail()).append("\n");
@@ -461,9 +484,15 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
           hostMailContent.append("-").append(guest.getEmail()).append("\n");
         }
       }
+
       String cancellationLink = getClientUrl() + "/booking/cancel/" + booking.getBookingToken();
       hostMailContent.append(cancellationLink).append("\n");
-      this.mailService.sendMail(booking.getEmail(), "Booking confirmation", hostMailContent.toString());
+      // mailContent = mailContent + cancellationLink;
+      **/
+
+      // Email-Funktion aktuell kaputt --> Kein Senden, kann erstmal weg
+      // this.mailService.sendMail(booking.getEmail(), "Booking confirmation", hostMailContent.toString());
+      // String result = hostMailContent.toString();
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
@@ -484,7 +513,7 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
       String cancellationLink = getClientUrl() + "/booking/rejectInvite/" + guest.getGuestToken();
 
       guestMailContent.append("To cancel invite: ").append(cancellationLink).append("\n");
-      this.mailService.sendMail(guest.getEmail(), "Invite accepted", guestMailContent.toString());
+      //this.mailService.sendMail(guest.getEmail(), "Invite accepted", guestMailContent.toString());
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
@@ -499,7 +528,7 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
       mailContent.append(guest.getEmail()).append(" has ").append(action).append(" your invitation for the event on ")
           .append(booking.getBooking().getBookingDate()).append("\n");
 
-      this.mailService.sendMail(booking.getBooking().getEmail(), "Invite " + action, mailContent.toString());
+      //this.mailService.sendMail(booking.getBooking().getEmail(), "Invite " + action, mailContent.toString());
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
@@ -515,7 +544,7 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
           .append("<").append(booking.getBooking().getEmail()).append(">").append(" for the event on ")
           .append(booking.getBooking().getBookingDate()).append("\n");
 
-      this.mailService.sendMail(guest.getEmail(), "Invite declined", guestMailContent.toString());
+      //this.mailService.sendMail(guest.getEmail(), "Invite declined", guestMailContent.toString());
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
@@ -529,7 +558,7 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
       mailContent.append("Hi ").append(guest.getEmail()).append("\n");
       mailContent.append("The invitation from ").append(booking.getEmail()).append(" for the event on ")
           .append(booking.getBookingDate()).append(" has been cancelled.").append("\n");
-      this.mailService.sendMail(guest.getEmail(), "Event cancellation", mailContent.toString());
+      //this.mailService.sendMail(guest.getEmail(), "Event cancellation", mailContent.toString());
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
@@ -543,7 +572,7 @@ public class BookingmanagementImpl extends AbstractComponentFacade implements Bo
       mailContent.append("Hi ").append(booking.getEmail()).append("\n");
       mailContent.append("The invitation for the event on ").append(booking.getBookingDate())
           .append(" has been cancelled.").append("\n");
-      this.mailService.sendMail(booking.getEmail(), "Event cancellation", mailContent.toString());
+      //this.mailService.sendMail(booking.getEmail(), "Event cancellation", mailContent.toString());
     } catch (Exception e) {
       LOG.error("Email not sent. {}", e.getMessage());
     }
